@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>i miss u </title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* สไตล์พื้นฐาน */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #FFFFFF; /* ขาวสะอาด */
+            font-family: 'IBM Plex Mono', monospace; /* ฟอนต์ Typewriter/Monospace */
+            overflow: hidden; 
+            color: #000000;
+        }
+
+        /* ปุ่ม Minimalist Ghost Button */
+        #clickButton {
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #000000; /* กรอบบางลง 1px */
+            border-radius: 0;
+            background-color: transparent;
+            color: #000000; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease-in-out; 
+            z-index: 10;
+        }
+
+        #clickButton:hover {
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+
+        /* Container ข้อความ Full Screen */
+        #fullScreenTextContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none; 
+            overflow: hidden;
+            color: #000000;
+            font-size: 1.2em; 
+            line-height: 1.4;
+            padding: 20px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            opacity: 0.9; 
+            z-index: 5;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap; 
+            align-content: center;
+        }
+
+        /* สไตล์สำหรับตัวอักษรที่ยังไม่ถูกพิมพ์ */
+        .untyped {
+            opacity: 0;
+            transition: opacity 0.02s linear;
+        }
+
+        /* ส่วนแสดงรูปภาพ */
+        #finalImageContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none; /* ซ่อนไว้ก่อน */
+            justify-content: center;
+            align-items: center;
+            background-color: #FFFFFF; /* พื้นหลังขาวสำหรับรูปภาพ */
+            z-index: 15; /* ให้อยู่เหนือทุกอย่าง */
+            overflow: hidden;
+        }
+
+        #finalImage {
+            max-width: 90%; /* ขนาดรูปภาพไม่เกิน 90% ของหน้าจอ */
+            max-height: 90%;
+            object-fit: contain; /* รูปภาพจะปรับขนาดให้พอดีโดยไม่ถูกบิดเบือน */
+            border-radius: 10px; /* ขอบมนเล็กน้อย */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* เงาอ่อนๆ */
+            opacity: 0; /* ซ่อนไว้ก่อนเริ่มอนิเมชั่น */
+            transform: scale(0.5) rotate(0deg); /* เริ่มต้นด้วยขนาดเล็กและไม่มีการหมุน */
+            animation: none; /* ไม่มีอนิเมชั่นตอนแรก */
+        }
+
+        /* อนิเมชั่นฮาๆ */
+        @keyframes funnyBounceAndRotate {
+            0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
+            30% { transform: scale(1.2) rotate(20deg); opacity: 1; } /* เด้งเกินเล็กน้อยและหมุน */
+            60% { transform: scale(0.8) rotate(-15deg); } /* ย่อลงและหมุนกลับ */
+            80% { transform: scale(1.1) rotate(10deg); } /* เด้งอีกนิด */
+            100% { transform: scale(1) rotate(0deg); opacity: 1; } /* กลับสู่ขนาดปกติและไม่หมุน */
+        }
+
+        .animate-image {
+            animation: funnyBounceAndRotate 1.5s ease-out forwards; /* 1.5 วินาที */
+        }
+    </style>
+</head>
+<body>
+
+    <button id="clickButton" onclick="startAnimation()">กดดดดดดดดด</button>
+
+    <div id="fullScreenTextContainer">
+        </div>
+
+    <div id="finalImageContainer">
+        <img id="finalImage" src="8818B9D3-2604-4DB9-91F0-1B09B43F6039.JPG" alt="รูปภาพสุดท้าย">
+    </div>
+
+    <script>
+        const textToType = "คิดถึง";
+        const container = document.getElementById('fullScreenTextContainer');
+        const button = document.getElementById('clickButton');
+        const finalImageContainer = document.getElementById('finalImageContainer');
+        const finalImage = document.getElementById('finalImage');
+        let isAnimating = false;
+        
+        const typingInterval = 10; 
+        const newWordDelay = 50; 
+
+        function startAnimation() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            button.style.display = 'none';
+            container.style.display = 'flex'; 
+            container.innerHTML = ''; 
+
+            typeTextInContainer();
+        }
+
+        function typeTextInContainer() {
+            const textArray = Array.from(textToType + ' '); 
+            const spanText = textArray.map(char => `<span class="untyped">${char}</span>`).join('');
+
+            container.innerHTML += spanText;
+
+            const untypedSpans = container.querySelectorAll('.untyped');
+            if (untypedSpans.length === 0) {
+                 isAnimating = false;
+                 return;
+            }
+
+            let charIndex = 0;
+
+            function typeNextChar() {
+                if (charIndex < untypedSpans.length) {
+                    const currentSpan = untypedSpans[charIndex];
+                    currentSpan.style.opacity = 1;
+                    currentSpan.classList.remove('untyped'); 
+
+                    if (isContainerFull(container)) {
+                        // เมื่อเต็มหน้าจอแล้ว ให้แสดงรูปภาพ
+                        showFinalImage();
+                        isAnimating = false;
+                        return; 
+                    }
+
+                    charIndex++;
+                    setTimeout(typeNextChar, typingInterval);
+                } else {
+                    setTimeout(() => {
+                        typeTextInContainer();
+                    }, newWordDelay); 
+                }
+            }
+            typeNextChar();
+        }
+
+        function isContainerFull(elem) {
+            return elem.scrollHeight > elem.clientHeight || elem.scrollWidth > elem.clientWidth;
+        }
+
+        function showFinalImage() {
+            container.style.display = 'none'; // ซ่อน container ข้อความ
+            finalImageContainer.style.display = 'flex'; // แสดง container รูปภาพ
+            finalImage.classList.add('animate-image'); // เพิ่ม class เพื่อเรียกใช้ animation
+        }
+
+    </script>
+
+</body>
+</html>
